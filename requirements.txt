@@ -1,18 +1,25 @@
-pandas==2.3.1
+# === Core scientific stack (harus duluan) ===
 numpy==2.2.6
+pandas==2.3.1
+scipy==1.14.1
+joblib==1.5.1
+setuptools>=68.0.0
+wheel>=0.43.0
+Cython>=0.29.36
+
+# === Stats & ML ===
 scikit-learn==1.7.1
 statsmodels==0.14.5
 matplotlib==3.10.5
 seaborn==0.13.2
 plotly==6.2.0
 
-
+# === Time series / forecasting ===
 pmdarima==2.0.4
 prophet==1.1.7
-
 cmdstanpy==1.2.4
 
-
+# === LLM / LangChain ===
 langchain==0.3.26
 langchain-community==0.3.27
 langchain-core==0.3.71
@@ -21,11 +28,10 @@ sentence-transformers==5.0.0
 chromadb==1.0.15
 openai==1.98.0
 
-
+# === API / App framework ===
 fastapi==0.116.1
 uvicorn==0.35.0
 streamlit==1.47.0
 
-
-joblib==1.5.1
+# === Utils ===
 python-dotenv==1.1.1
