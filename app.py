@@ -1,10 +1,37 @@
 import streamlit as st
 from utils.custom_style import apply_custom_style
+from st_pages import Page, Section, show_pages, add_page_title  # <- tambahkan ini
 
 st.set_page_config(page_title="Dashboard AI", layout='wide')
 
 # Load style hanya sekali
 apply_custom_style()
+
+add_page_title()
+
+# Sidebar logo
+st.sidebar.image("assets/bpjs_logo.png", width=150)
+st.sidebar.markdown("---")
+
+st.markdown("""
+<style>
+[data-testid="stSidebar"] {
+    background: linear-gradient(to bottom, #0D9276, #106EBE);
+    color: white;
+}
+</style>
+""", unsafe_allow_html=True)
+
+show_pages(
+    [
+        Section("Main Pages", "🏠"),
+        Page("app.py", "Home", "🏡", in_section=True),  # optional: masukkan app.py
+        Page("pages/dashboard.py", "Dashboard", "📊", in_section=True),
+        Page("pages/forecasting.py", "Forecasting", "📈", in_section=True),
+        Page("pages/page_conversation.py", "Conversation", "💬", in_section=True)
+    ]
+)
+
 
 # Header utama
 st.markdown("""

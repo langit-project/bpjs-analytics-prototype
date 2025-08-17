@@ -19,8 +19,8 @@ def apply_custom_style():
         }
                 
         .block-container {
-        max-width: 1400px;
-        margin: auto;
+            max-width: 1400px;
+            margin: auto;
         }
                 
         h1 {
@@ -30,13 +30,13 @@ def apply_custom_style():
 
         /* Sidebar style */
         [data-testid="stSidebar"] {
-            background: linear-gradient(to bottom, #0D9276, #106EBE);
-            color: white;
+            /* background: linear-gradient(to bottom, #0D9276, #106EBE); */
+            /* color: white; */
             width: 180px !important;
         }
         
         div[data-testid="stSidebar"] + section.main {
-        margin-left: 180px !important;
+            margin-left: 180px !important;
         }
         
         .stButton > button {
@@ -79,7 +79,4 @@ def apply_custom_style():
         [data-testid="stMetricDelta"] {
             font-size: 4px;
         }
-                
-
         </style>
-    """, unsafe_allow_html=True)
