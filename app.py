@@ -19,8 +19,6 @@ pg = st.navigation(nav)
 # Atur judul page
 add_page_title(pg)
 
-pg.run()
-
 # Sidebar logo
 # st.sidebar.image("assets/bpjs_logo.png", width=150)
 # st.sidebar.markdown("---")
