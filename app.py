@@ -1,24 +1,34 @@
 import streamlit as st
 from utils.custom_style import apply_custom_style
-from st_pages import add_page_title, Page  # st-pages v1.x
+# from st_pages import add_page_title, Page  # st-pages v1.x
+from st_pages import add_page_title, get_nav_from_toml
 
 # Set page config
-st.set_page_config(page_title="Dashboard AI", layout='wide')
+st.set_page_config(layout="wide")
+# st.set_page_config(page_title="Dashboard AI", layout='wide')
 
 # Load custom style
 apply_custom_style()
 
+nav = get_nav_from_toml()
+
+st.logo("assets/bpjs_logo.png")
+
+pg = st.navigation(nav)
+
 # Atur judul page
-add_page_title()
+add_page_title(pg)
+
+pg.run()
 
 # Sidebar logo
-st.sidebar.image("assets/bpjs_logo.png", width=150)
-st.sidebar.markdown("---")
+# st.sidebar.image("assets/bpjs_logo.png", width=150)
+# st.sidebar.markdown("---")
 
-# Setup multipages menggunakan st-pages v1.x
-Page("pages/dashboard.py", "Dashboard", icon="📊")
-Page("pages/forecasting.py", "Forecasting", icon="📈")
-Page("pages/page_conversation.py", "Conversation", icon="💬")
+# # Setup multipages menggunakan st-pages v1.x
+# Page("pages/dashboard.py", "Dashboard", icon="📊")
+# Page("pages/forecasting.py", "Forecasting", icon="📈")
+# Page("pages/page_conversation.py", "Conversation", icon="💬")
 
 # Header utama
 st.markdown("""
