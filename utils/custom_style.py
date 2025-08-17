@@ -80,3 +80,4 @@ def apply_custom_style():
             font-size: 4px;
         }
         </style>
+    """, unsafe_allow_html=True)
