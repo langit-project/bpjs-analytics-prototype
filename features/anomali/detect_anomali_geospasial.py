@@ -1,6 +1,6 @@
 import streamlit as st
 
-def detect_spatial_anomaly(df, group_col, jumlah_col, label, z_threshold=2.5):
+def detect_spatial_anomaly(df, group_col, jumlah_col, label, z_threshold=2):
     """
     Deteksi anomali berdasarkan Z-score.
 
