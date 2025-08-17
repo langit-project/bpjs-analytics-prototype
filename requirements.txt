@@ -7,10 +7,8 @@ seaborn==0.13.2
 plotly==6.2.0
 
 
-pmdarima==2.0.4
-prophet==1.1.7
 
-cmdstanpy==1.2.4
+prophet==1.1.7
 
 
 langchain==0.3.26
