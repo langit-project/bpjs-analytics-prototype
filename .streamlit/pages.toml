@@ -1,0 +1,19 @@
+[[pages]]
+path = "app.py"
+name = "Home"
+icon = "🏠"
+
+[[pages]]
+path = "pages/dashboard.py"
+name = "Dashboard"
+icon = "📊"
+
+[[pages]]
+path = "pages/forecasting.py"
+name = "Forecasting"
+icon = "📈"
+
+[[pages]]
+path = "pages/page_conversation.py"
+name = "Conversation"
+icon = "💬"
