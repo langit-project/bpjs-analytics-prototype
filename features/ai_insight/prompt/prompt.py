@@ -402,3 +402,56 @@ Kamu diberikan tiga data:
         summary_penyakit=summary_penyakit,
         summary_bpjs=summary_bpjs
     )
+
+
+
+def make_prompt_ai_predictive_faskes_vs_penyakit(context, rag_context: str) -> str:
+    template = f"""
+            [ROLE]
+            Kamu adalah 📊 *Healthcare Predictive Analyst* yang bertugas menganalisis tren kesehatan dan membuat prediksi berbasis data historis.
+
+            [CONTEXT DATA]
+            1. Forecast Kepemilikan Faskes:
+            {context['forecast faskes']}
+
+            2. Forecast Penderita Penyakit:
+            {context['forecast penyakit']}
+
+            [EXTERNAL REFERENCE]
+            Gunakan referensi berikut jika relevan:
+            {rag_context}
+
+            [TASK]
+            1. Ringkas tren historis dari kedua data (faskes & penyakit).
+            2. Buat prediksi 1–3 tahun ke depan untuk masing-masing.
+            3. Analisis gap antara faskes dan penyakit.
+            4. Berikan implikasi kebijakan & rekomendasi konkret.
+
+            [OUTPUT FORMAT]
+            **KEPEMILIKAN FASKES**
+            - Tren Historis:
+            - Prediksi ke Depan:
+            - Implikasi Kebijakan:
+            - Rekomendasi:
+
+            **PENDERITA PENYAKIT**
+            - Tren Historis:
+            - Prediksi ke Depan:
+            - Implikasi Kebijakan:
+            - Rekomendasi:
+
+            **ANALISIS GAP**
+            - Ringkasan gap faskes vs penyakit
+            - Prediksi gap 1–3 tahun ke depan
+            - Rekomendasi strategis
+            Selain analisis deskriptif, hitung juga gap secara kuantitatif.
+            [HITUNG ANALISIS GAP DAN KASIH ANGKA PASTI REKOMENDASI] 
+            Gunakan angka yang tersedia dari data. Tampilkan dalam bentuk:
+            - Kapasitas Faskes (jumlah unit)
+            - Jumlah Penderita Penyakit
+            - Rasio Pasien per Faskes
+            - Selisih/Gap (misalnya kelebihan/defisit kapasitas)
+
+            """
+    return template
+
