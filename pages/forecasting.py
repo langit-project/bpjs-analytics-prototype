@@ -3,16 +3,23 @@ import plotly.express as px
 
 from utils.custom_style import apply_custom_style
 
+from core.generator.filter.filter_kpi_metric import *
+
+
 from core.generator.peserta_bpjs.generator_full_peserta_bpjs import generate_full_peserta_bpjs
 from core.generator.peserta_bpjs.generator_for_trend_peserta import generate_trend_peserta
+from core.generator.penyakit.generator_for_chart_trend_penyakit import generate_trend_penyakit
+from core.generator.faskes_jenis.generator_for_trend_faskes_jenis import generate_trend_faskes_jenis
 
-from features.forecast.forecast_trend_peserta_bpjs import forecast_trend_peserta_sarimax,plot_forecast_line,forecast_trend_peserta_sarimax_ci,plot_forecast_with_ci
+
+from features.predictive.forecast_trend_peserta_bpjs import forecast_trend_peserta_sarimax_ci,plot_forecast_with_ci
+from features.predictive.forecast_trend_jenis_faskes import forecast_trend_faskes_sarimax_ci,plot_forecast_faskes_with_ci
 # Apply style
 apply_custom_style()
 
 
-list_kota = sorted(generate_full_peserta_bpjs()['bps_nama_kabupaten_kota'].unique())
-selected_kotas = st.multiselect("Pilih Kabupaten/Kota", options=list_kota, default=["KABUPATEN BOGOR"])
+# list_kota = sorted(generate_full_peserta_bpjs()['bps_nama_kabupaten_kota'].unique())
+selected_kotas = st.multiselect("Pilih Kabupaten/Kota", filter_kabkot(), default=["KABUPATEN BOGOR"])
 df_agg = generate_trend_peserta(selected_kotas)
 # forecast ci
 df_forecast_ci=forecast_trend_peserta_sarimax_ci(df=df_agg,selected_kota=selected_kotas,forecast_years=3)
@@ -20,6 +27,33 @@ df_forecast_ci=forecast_trend_peserta_sarimax_ci(df=df_agg,selected_kota=selecte
 # st.dataframe(df_forecast_ci)
 
 st.plotly_chart(plot_forecast_with_ci(df_forecast_ci), use_container_width=True)
+
+
+st.markdown("---")
+
+with st.container(border=True):
+    selected_kotas = st.selectbox("Pilih Kabupaten/Kota", filter_kabkot())
+    df_agg_jenis_faskes = generate_trend_faskes_jenis(selected_kota=selected_kotas)
+    df_agg_penyakit = generate_trend_penyakit(selected_kotas=selected_kotas)
+    df_forecast_jenis_faskes = forecast_trend_faskes_sarimax_ci(df = df_agg_jenis_faskes,selected_kota=selected_kotas)
+    plot_jenis_faskes_forcast = plot_forecast_faskes_with_ci(df_forecast_jenis_faskes,selected_kotas)
+
+    col1,col2 = st.columns(2)
+    with col1:
+        
+        # st.dataframe(df_agg_jenis_faskes)
+        # st.dataframe(df_forecast_jenis_faskes)
+        st.plotly_chart(plot_jenis_faskes_forcast, use_container_width=True)
+
+    with col2:
+        st.markdown("dalam perbaikan")
+        # st.dataframe(df_agg_penyakit)
+
+
+
+
+
+
 
 # df_forecast=forecast_trend_peserta_sarimax(df=df_agg,selected_kota=selected_kotas,forecast_years=3)
 

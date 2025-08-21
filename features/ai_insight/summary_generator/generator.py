@@ -83,6 +83,25 @@ def df_to_tabular_string(df):
 
 import io
 
+import json
+
+def df_to_json(df, orient="records", indent=2):
+    """
+    Convert DataFrame ke JSON string.
+    
+    Parameters:
+    - df: DataFrame pandas
+    - orient: format JSON, default 'records' (list of dict per row)
+              alternatif: 'split', 'index', 'columns', 'values'
+    - indent: biar output rapih
+    
+    Return:
+    - string JSON
+    """
+    return df.to_json(orient=orient, indent=indent, force_ascii=False)
+
+
+
 def save_multiple_df_to_tabular_string(dfs: dict) -> str:
     """
     Simpan beberapa DataFrame ke dalam satu string dalam format tabular,
