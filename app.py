@@ -30,7 +30,7 @@ apply_custom_style()
 
 # Header utama
 st.markdown("""
-<h1 style="text-align: center; font-size: 2.5em;">🚀 Selamat Datang di <span style="color:#0D9276;">Dashboard AI</span></h1>
+<h1 style="text-align: center; font-size: 2.5em;">🚀 Selamat Datang di <span style="color:#0D9276;">Smart Dasboard</span></h1>
 <p style="text-align: center; font-size: 1.1em; color: #555;">
 Pantau data, dapatkan insight AI, dan pantau prediksi.
 </p>
@@ -42,7 +42,7 @@ st.write("---")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("### 📊 Dashboard")
+    st.markdown("### 📊 Smart Dashboard")
     st.write("""
     Lihat visualisasi data yang interaktif  
     untuk memantau tren, performa serta generate insight berbasis AI.
@@ -56,7 +56,7 @@ with col2:
     """)
 
 with col3:
-    st.markdown("### 💬 Page Conversation")
+    st.markdown("### 💬 Chat")
     st.write("""
     Diskusikan data dengan AI untuk  
     mendapatkan insight secara langsung.
@@ -68,9 +68,9 @@ st.write("---")
 st.markdown("""
 ### 🧭 Panduan Singkat
 1. Pilih menu di sebelah kiri untuk berpindah halaman.
-2. Gunakan **Dashboard** untuk melihat data dan insight awal.
+2. Gunakan **Smart Dashboard** untuk melihat data dan insight awal.
 3. Gunakan **Forecasting** untuk memprediksi tren ke depan.
-4. Gunakan **Page Conversation** untuk bertanya langsung ke AI.
+4. Gunakan **Chat** untuk bertanya langsung ke AI.
 
-💡 **Tips:** Mulailah dari *Dashboard* agar mendapatkan gambaran umum sebelum masuk ke analisis lebih detail.
+💡 **Tips:** Mulailah dari *Smart Dashboard* agar mendapatkan gambaran umum sebelum masuk ke analisis lebih detail.
 """)

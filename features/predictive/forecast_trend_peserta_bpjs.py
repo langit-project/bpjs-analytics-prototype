@@ -7,7 +7,7 @@ import numpy as np
 
 import plotly.graph_objects as go
 
-def forecast_trend_peserta_sarimax_ci(df, selected_kota: list[str], forecast_years: int = 5) -> pd.DataFrame:
+def forecast_trend_peserta_sarimax_ci(df, selected_kota: list[str], forecast_years: int = 2) -> pd.DataFrame:
     df_agg = df.copy()
     all_forecasts = []
 

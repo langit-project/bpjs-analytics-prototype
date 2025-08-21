@@ -4,7 +4,9 @@ from .llm_model import ask_llm
 from typing import Literal
 
 
-def run_insight_pipeline(df, insight_type: Literal["pertumbuhan_peserta_bpjs", "penyebaran_peserta_bpjs","jumlah_faskes_berdasarkan_jenis", "pertumbuhan_jenis_faskes","penyebaran_jenis_faskes","pertumbuhan_penyakit","penyebaran_penyakit"]):
+def run_insight_pipeline(df, insight_type: Literal["pertumbuhan_peserta_bpjs", "penyebaran_peserta_bpjs",
+                                                   "jumlah_faskes_berdasarkan_jenis", "pertumbuhan_jenis_faskes",
+                                                   "penyebaran_jenis_faskes","pertumbuhan_penyakit","penyebaran_penyakit"]):
     config = INSIGHT_REGISTRY.get(insight_type)
     if not config:
         raise ValueError(f"Insight type '{insight_type}' belum didukung.")

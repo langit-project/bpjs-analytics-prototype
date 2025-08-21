@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 
 
-def forecast_trend_faskes_sarimax_ci(df, selected_kota: str, forecast_years: int = 5) -> pd.DataFrame:
+def forecast_trend_faskes_sarimax_ci(df, selected_kota: str, forecast_years: int = 2) -> pd.DataFrame:
     df_agg = df.copy()
     all_forecasts = []
 
@@ -90,16 +90,16 @@ def plot_forecast_faskes_with_ci(df_forecast, kota_name: str):
             marker=dict(symbol="circle-open", size=12, line=dict(width=2))
         ))
 
-        # CI untuk forecast
-        fig.add_trace(go.Scatter(
-            x=pd.concat([df_fc['tahun'], df_fc['tahun'][::-1]]),
-            y=pd.concat([df_fc['upper_ci'], df_fc['lower_ci'][::-1]]),
-            fill='toself',
-            fillcolor='rgba(0,100,200,0.2)',
-            line=dict(color='rgba(255,255,255,0)'),
-            hoverinfo="skip",
-            name=f"{faskes} (CI)"
-        ))
+        # # CI untuk forecast
+        # fig.add_trace(go.Scatter(
+        #     x=pd.concat([df_fc['tahun'], df_fc['tahun'][::-1]]),
+        #     y=pd.concat([df_fc['upper_ci'], df_fc['lower_ci'][::-1]]),
+        #     fill='toself',
+        #     fillcolor='rgba(0,100,200,0.2)',
+        #     line=dict(color='rgba(255,255,255,0)'),
+        #     hoverinfo="skip",
+        #     name=f"{faskes} (CI)"
+        # ))
 
     fig.update_layout(
         title=f"Trend & Forecast Jumlah Faskes per Jenis di {kota_name}",
