@@ -65,6 +65,71 @@ def forecast_trend_faskes_sarimax_ci(df, selected_kota: str, forecast_years: int
     df_result.sort_values(['jenis_faskes', 'tahun'], inplace=True)
     return df_result
 
+def forecast_trend_faskes_sarimax_ci_summary(df, forecast_years: int = 2) -> pd.DataFrame:
+    df_agg = df.copy()
+    all_forecasts = []
+
+    # Loop per kabupaten/kota
+    for kota in df_agg['nama_kabupaten_kota'].unique():
+        df_kota = df_agg[df_agg['nama_kabupaten_kota'] == kota].copy()
+
+        # Skip kalau kosong
+        if df_kota.empty:
+            continue
+
+        # Loop per jenis faskes
+        for jenis in df_kota['jenis_faskes'].unique():
+            df_jenis = df_kota[df_kota['jenis_faskes'] == jenis].copy()
+
+            if df_jenis.empty:
+                continue
+
+            # Rename kolom ke 'jumlah'
+            df_jenis = df_jenis.rename(columns={'jumlah_faskes': 'jumlah'})
+            
+            # Pastikan tahun datetime index
+            df_jenis['tahun'] = pd.to_datetime(df_jenis['tahun'], format='%Y')
+            df_jenis.set_index('tahun', inplace=True)
+
+            try:
+                # Fit SARIMAX
+                model = SARIMAX(df_jenis['jumlah'], order=(1,1,1), seasonal_order=(0,0,0,0))
+                results = model.fit(disp=False)
+
+                # Forecast + CI
+                future = results.get_forecast(steps=forecast_years)
+                forecast_df = future.predicted_mean.reset_index()
+                forecast_df.columns = ['tahun', 'jumlah']
+                forecast_df['tipe'] = 'forecast'
+                forecast_df['lower_ci'] = future.conf_int().iloc[:, 0].values
+                forecast_df['upper_ci'] = future.conf_int().iloc[:, 1].values
+
+                # Historical
+                df_hist = df_jenis.reset_index()[['tahun', 'jumlah']]
+                df_hist['tipe'] = 'actual'
+                df_hist['lower_ci'] = None
+                df_hist['upper_ci'] = None
+
+                # Tambah metadata
+                df_hist['nama_kabupaten_kota'] = kota
+                df_hist['jenis_faskes'] = jenis
+                forecast_df['nama_kabupaten_kota'] = kota
+                forecast_df['jenis_faskes'] = jenis
+
+                # Gabungkan
+                all_forecasts.append(pd.concat([df_hist, forecast_df], ignore_index=True))
+            
+            except Exception as e:
+                print(f"[ERROR] Gagal forecast {kota} - {jenis}: {e}")
+                continue
+
+    if not all_forecasts:
+        return pd.DataFrame(columns=['tahun', 'jumlah', 'tipe', 'lower_ci', 'upper_ci', 'nama_kabupaten_kota', 'jenis_faskes'])
+
+    df_result = pd.concat(all_forecasts, ignore_index=True)
+    df_result.sort_values(['nama_kabupaten_kota', 'jenis_faskes', 'tahun'], inplace=True)
+    return df_result
+
 
 def plot_forecast_faskes_with_ci(df_forecast, kota_name: str):
     fig = go.Figure()

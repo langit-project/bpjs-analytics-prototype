@@ -12,4 +12,7 @@ def generate_faskes_jenis_summary():
                 .reset_index(name='jumlah_faskes')
                 .sort_values(by='jumlah_faskes', ascending=False)
             )
+    df['nama_kabupaten_kota'] = df['nama_kabupaten_kota'].astype(str)
+    df['jenis_faskes'] = df['jenis_faskes'].astype(str)
+    df = df.sort_values(['nama_kabupaten_kota', 'jenis_faskes', 'tahun'])
     return df

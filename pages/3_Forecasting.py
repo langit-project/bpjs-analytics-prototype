@@ -7,13 +7,14 @@ from core.generator.filter.filter_kpi_metric import *
 
 
 from core.generator.peserta_bpjs.generator_full_peserta_bpjs import generate_full_peserta_bpjs
+from core.generator.faskes_jenis.generator_for_summary_faskes_jenis import generate_faskes_jenis_summary
 from core.generator.peserta_bpjs.generator_for_trend_peserta import generate_trend_peserta
 from core.generator.penyakit.generator_for_chart_trend_penyakit import generate_trend_penyakit
 from core.generator.faskes_jenis.generator_for_trend_faskes_jenis import generate_trend_faskes_jenis
 
 
 from features.predictive.forecast_trend_peserta_bpjs import forecast_trend_peserta_sarimax_ci,plot_forecast_with_ci
-from features.predictive.forecast_trend_jenis_faskes import forecast_trend_faskes_sarimax_ci,plot_forecast_faskes_with_ci
+from features.predictive.forecast_trend_jenis_faskes import forecast_trend_faskes_sarimax_ci,plot_forecast_faskes_with_ci,forecast_trend_faskes_sarimax_ci_summary
 from features.predictive.forecast_trend_jenis_penyakit import forecast_trend_penyakit_sarimax_ci,plot_forecast_penyakit_with_ci
 
 from features.ai_insight.run_insight_pipeline_predictive import run_insight_multiple_data
@@ -65,6 +66,11 @@ with st.container(border=True):
     if st.session_state.faskes_vs_penyakit:
         with st.popover("📌 Lihat Insight"):
             st.markdown(st.session_state.faskes_vs_penyakit)
+
+
+
+
+
 
 
 

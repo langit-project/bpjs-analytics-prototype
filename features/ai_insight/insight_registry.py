@@ -33,6 +33,10 @@ INSIGHT_REGISTRY = {
         "summary_func": generator.df_to_json,
         "prompt_func": prompt.make_ai_prompt_peta_persebaran_penyakit
     },
+    "forecast_faskes_vs_penyakit": {
+        "summary_func": generator.df_to_json,
+        "prompt_func": prompt.make_ai_prompt_peta_persebaran_penyakit
+    },
     
     
     # kamu bisa tambahkan "new_customer", "habit_time", dst nanti

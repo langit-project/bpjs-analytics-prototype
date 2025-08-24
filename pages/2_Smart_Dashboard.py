@@ -184,7 +184,7 @@ with st.container(border=True):
         with col1:
             kota_option = st.selectbox("🏙️ Pilih Kab/Kota", generate_faskes_jenis_summary()['nama_kabupaten_kota'].unique())
         with col2:
-            selected_tahun = st.selectbox("📆 Pilih Tahun", generate_faskes_jenis_summary()["tahun"].unique())
+            selected_tahun = st.selectbox("📆 Pilih Tahun", generate_faskes_jenis_summary()["tahun"].unique(),key="select box for jenis faskes grafik")
         df = generate_bar_faskes_jenis(selected_kota=kota_option,tahun=selected_tahun)
         st.plotly_chart(plot_bar_jumlah_jenis_faskes(df,selected_kota=kota_option,tahun=tahun),use_container_width=True)
         if st.button("🧠 Generate AI", key="ai sdistribusi jenis faskes"):
@@ -202,7 +202,7 @@ with st.container(border=True):
         with col1:
             jenisfaskes_option = st.selectbox("🏙️ Pilih Jenis Faskes", generate_faskes_jenis_summary()['jenis_faskes'].unique())
         with col2:
-            tahun_option = st.selectbox("📆 Pilih Tahun", generate_faskes_jenis_summary()["tahun"].unique(),key="tahun faskes jenis")
+            tahun_option = st.selectbox("📆 Pilih Tahun", generate_faskes_jenis_summary()["tahun"].unique(),key="select box tahun jenis faskes map")
 
         df = generate_geo_faskes_jenis(selected_jenis_faskes=jenisfaskes_option, selected_tahun=tahun_option)
         st.plotly_chart(
