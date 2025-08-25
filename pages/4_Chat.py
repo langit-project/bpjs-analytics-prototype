@@ -137,7 +137,9 @@
 #         st.session_state.chat_history.append({"role": "assistant", "content": response_data["content"], "type": response_data["type"]})
 #     st.rerun()
 
-
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 import streamlit as st
 from utils.custom_style import apply_custom_style
