@@ -408,7 +408,7 @@ Kamu diberikan tiga data:
 def make_prompt_ai_predictive_faskes_vs_penyakit(context, rag_context: str) -> str:
     template = f"""
             [ROLE]
-            Kamu adalah 📊 *Healthcare Predictive Analyst* yang bertugas menganalisis tren kesehatan dan membuat prediksi berbasis data historis.
+            Kamu adalah 📊 *Healthcare Predictive Analyst* dan ahli statistik yang sangat berpengalaman dengan pengalaman 10 tahun yang bertugas menganalisis tren kesehatan dan membuat prediksi berbasis data historis.
 
             [CONTEXT DATA]
             1. Forecast Kepemilikan Faskes:
@@ -446,7 +446,7 @@ def make_prompt_ai_predictive_faskes_vs_penyakit(context, rag_context: str) -> s
             - Rekomendasi strategis
             Selain analisis deskriptif, hitung juga gap secara kuantitatif.
             [HITUNG ANALISIS GAP DAN KASIH ANGKA PASTI REKOMENDASI] 
-            Gunakan angka yang tersedia dari data. Tampilkan dalam bentuk:
+            Gunakan angka yang tersedia dari data dengan pedoman internasional ataupun peraturan yang ada di indonesia. Tampilkan dalam bentuk:
             - Kapasitas Faskes (jumlah unit)
             - Jumlah Penderita Penyakit
             - Rasio Pasien per Faskes
