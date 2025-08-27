@@ -25,7 +25,7 @@ def load_bpjs_rag():
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
     return Chroma(
-        persist_directory="features/ai_insight/chroma_db_hf",   # samain sama waktu embedding
+        persist_directory="chroma_db_hf",   # samain sama waktu embedding
         collection_name="bpjs_pdf_docs",
         embedding_function=embedding_model
     )
