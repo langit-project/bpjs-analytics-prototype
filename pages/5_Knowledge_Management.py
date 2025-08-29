@@ -5,6 +5,10 @@ import os, shutil
 from features.ai_insight.ingest_and_embed import embed_pdf, delete_doc, list_docs
 from utils.custom_style import apply_custom_style
 
+from features.ai_insight.rag_retriever import load_bpjs_rag
+# auth_guard
+from utils.auth_guard import require_login
+name = require_login()
 
 apply_custom_style()
 
@@ -25,10 +29,15 @@ if uploaded_file is not None:
     if st.button("🚀 Proses & Simpan ke Knowledge Base"):
         with st.spinner("Embedding & simpan ke Chroma..."):
             result = embed_pdf(file_path)
+            # 🔥 Refresh retriever setelah embed
+            st.session_state["vector_db"] = load_bpjs_rag()
         st.success(
             f"✅ {result['file_name']} berhasil di-embed "
             f"({result['chunks']} chunks) | DocID: {result['doc_id']}"
         )
+
+
+
 
 st.divider()
 
@@ -64,8 +73,33 @@ for doc in docs:
             if st.button("🗑️ Hapus", key=doc["doc_id"]):
                 delete_doc(doc["doc_id"])
                 st.success(f"Knowledge {doc['file_name']} berhasil dihapus")
-                st.experimental_rerun()
+                # 🔥 Refresh retriever setelah delete
+                st.session_state["vector_db"] = load_bpjs_rag()
+                st.rerun()
 
         st.markdown("</div>", unsafe_allow_html=True)
 
+
+
+# # ===== Upload PDF V2=====
+# uploaded_file = st.file_uploader("Upload PDF untuk dijadikan knowledge (Max 20MB)", type=["pdf"])
+
+# if uploaded_file is not None:
+#     file_size = len(uploaded_file.getbuffer())  # ukuran dalam bytes
+#     max_size_mb = 20
+
+#     if file_size > max_size_mb * 1024 * 1024:
+#         st.error(f"❌ File terlalu besar! Maksimum {max_size_mb}MB.")
+#     else:
+#         file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+#         with open(file_path, "wb") as f:
+#             shutil.copyfileobj(uploaded_file, f)
+
+#         if st.button("🚀 Proses & Simpan ke Knowledge Base"):
+#             with st.spinner("Embedding & simpan ke Chroma..."):
+#                 result = embed_pdf(file_path)
+#             st.success(
+#                 f"✅ {result['file_name']} berhasil di-embed "
+#                 f"({result['chunks']} chunks) | DocID: {result['doc_id']}"
+#             )
 

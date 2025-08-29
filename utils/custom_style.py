@@ -1,3 +1,5 @@
+
+# utils/custom_style.py
 import streamlit as st
 
 def apply_custom_style():
@@ -79,7 +81,56 @@ def apply_custom_style():
         [data-testid="stMetricDelta"] {
             font-size: 4px;
         }
+    
+
+
+
                 
+
+
+
+
+
+
+
+
+                
+
+        /* Input box style */
+        div[data-testid="stTextInput"] input {
+            border: 1px solid #0D9276;
+            border-radius: 8px;
+            padding: 0.5em;
+        }
+
+        /* Label style */
+        div[data-testid="stTextInput"] label {
+            font-weight: bold;
+            color: #0D9276;
+        }
+
+        /* Login button */
+        div.stButton > button[kind="primary"] {
+            background-color: #106EBE !important;
+            color: white !important;
+            font-weight: bold;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        div.stButton > button[kind="primary"]:hover {
+            background-color: #0b5fa1 !important;
+        }
+
+                
+        
+                /* Logout button khusus sidebar */
+        [data-testid="stSidebar"] .stButton > button {
+            background-color: #106EBE;
+            font-size: 14px;
+            padding: 0.3em 0.5em;
+        }
+
 
         </style>
     """, unsafe_allow_html=True)

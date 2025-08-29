@@ -21,10 +21,21 @@ from features.ai_insight.run_insight_pipeline_predictive import run_insight_mult
 # Apply style
 apply_custom_style()
 
+# auth_guard
+from utils.auth_guard import require_login
+name = require_login()
+
+
 if "faskes_vs_penyakit" not in st.session_state:
     st.session_state.faskes_vs_penyakit = None
 
-
+# --- Layout ---
+with st.container():
+    st.markdown("""
+        <div class="header-container">
+            <h1>Forecasting</h1>
+        </div>
+    """, unsafe_allow_html=True)
 
 # list_kota = sorted(generate_full_peserta_bpjs()['bps_nama_kabupaten_kota'].unique())
 selected_kotas = st.multiselect("Pilih Kabupaten/Kota", filter_kabkot(), default=["KABUPATEN BOGOR"])

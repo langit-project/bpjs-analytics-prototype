@@ -1,160 +1,92 @@
-# pages/02_Conversation.py
+# pages/02_chat.py
 
 import streamlit as st
 from utils.custom_style import apply_custom_style
 from features.ai_insight.insight_conversation import handle_insight_conversation
-import matplotlib.pyplot as plt
+from features.ai_insight.rag_retriever import load_bpjs_rag   # 🔥 tambahkan import ini
+
 import plotly.express as px
+
+# auth_guard
+from utils.auth_guard import require_login
+name = require_login()
 
 # Jangan panggil st.set_page_config di halaman ini
 apply_custom_style()
 
 st.title("🤖 Chat")
+st.caption("Ngobrol dengan asisten AI kamu. Tanyakan tentang data, insight, atau apapun 🚀")
+st.markdown("---")
 
-# inisialisasi session state (shared antar halaman)
-# Menggunakan struktur dictionary untuk membedakan tipe pesan
+# Inisialisasi session state
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# Tombol hapus history
-if st.session_state.chat_history:
+# Fungsi tambah pesan
+def add_message(role, content, type="text"):
+    st.session_state.chat_history.append({"role": role, "content": content, "type": type})
+    with st.chat_message(role):
+        if type == "text":
+            st.markdown(content)
+        elif type == "plot":
+            st.plotly_chart(content)
+
+# Suggestion list
+suggestions = [
+    "analisis Peserta BPJS setiap Kabupaten/kota",
+    "analisis Penderita Dabetes setiap Kabupaten/Kota",
+    "analisis Jumlah Faskes setiap Kabupaten/Kota",
+]
+
+
+   
+
+# === Jika belum ada chat, tampilkan halaman welcome ===
+if len(st.session_state.chat_history) == 0:
+    st.markdown(
+        """
+        <div style="text-align: center; padding: 50px 20px; color: #555;">
+            <div style="font-size: 40px; margin-bottom: 20px;">💬</div>
+            <h3>Mulai percakapan</h3>
+            <p>Tidak ada chat yang tampil. Tanyakan apa pun terkait klaim, prediksi, atau data kesehatan Anda, 
+            atau gunakan salah satu saran di bawah.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    # Suggestion card (horizontal)
+    cols = st.columns(len(suggestions))
+    for i, s in enumerate(suggestions):
+        if cols[i].button(s):
+            add_message("user", s, "text")
+            with st.chat_message("assistant"):
+                with st.spinner("🤖 Menganalisis dan menjawab..."):
+                    response_data = handle_insight_conversation(s)
+                    add_message("assistant", response_data["content"], response_data["type"])
+            st.rerun()
+
+else:
+    # Tombol hapus history
     col1, col2 = st.columns([0.85, 0.15])
     with col2:
         if st.button("🗑️ Hapus Chat"):
             st.session_state.chat_history = []
             st.rerun()
 
-# Tampilkan history
-for message in st.session_state.chat_history:
-    try:
+    # Tampilkan history
+    for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
-            # Cek tipe pesan dan tampilkan
             if message["type"] == "text":
                 st.markdown(message["content"])
             elif message["type"] == "plot":
-                # Menggunakan st.plotly_chart untuk menampilkan objek Plotly
                 st.plotly_chart(message["content"])
-    except Exception as e:
-        # fallback jika chat_message tidak tersedia atau ada error
-        st.markdown(f"**{message['role']}**: {message['content']}")
-        st.error(f"Error rendering plot: {e}")
 
-st.markdown("---")
-
-# Input baru (chat)
-prompt = st.chat_input("Tulis pertanyaanmu di sini...")
-
-if prompt:
-    # simpan prompt user
-    st.session_state.chat_history.append({"role": "user", "content": prompt, "type": "text"})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    # proses jawaban
+# Input manual (chat_input tetap di bawah)
+if prompt := st.chat_input("Tulis pertanyaanmu di sini..."):
+    add_message("user", prompt, "text")
     with st.chat_message("assistant"):
         with st.spinner("🤖 Menganalisis dan menjawab..."):
-            # Panggil fungsi yang sudah diubah
             response_data = handle_insight_conversation(prompt)
-
-            # Tampilkan konten berdasarkan tipenya
-            if response_data["type"] == "text":
-                st.markdown(response_data["content"])
-            elif response_data["type"] == "plot":
-                # Tampilkan teks pengantar sebelum plot
-                st.markdown("Berikut adalah plot yang saya buat:")
-                # Menggunakan st.plotly_chart
-                st.plotly_chart(response_data["content"])
-
-        # Simpan respons ke history
-        st.session_state.chat_history.append({"role": "assistant", "content": response_data["content"], "type": response_data["type"]})
+            add_message("assistant", response_data["content"], response_data["type"])
     st.rerun()
-
-# ============versi 2
-
-# import streamlit as st
-# from utils.custom_style import apply_custom_style
-# from features.ai_insight.insight_conversation import handle_insight_conversation
-
-# # Terapkan style custom (jika ada)
-# apply_custom_style()
-
-# # Atur page
-# st.set_page_config(page_title="AI Chat", page_icon="🤖", layout="wide")
-
-# # CSS custom untuk bubble chat
-# st.markdown("""
-#     <style>
-#     .chat-bubble-user {
-#         background-color: #DCF8C6;
-#         padding: 10px 15px;
-#         border-radius: 15px;
-#         margin: 5px;
-#         max-width: 70%;
-#         float: right;
-#         clear: both;
-#     }
-#     .chat-bubble-assistant {
-#         background-color: #F1F0F0;
-#         padding: 10px 15px;
-#         border-radius: 15px;
-#         margin: 5px;
-#         max-width: 70%;
-#         float: left;
-#         clear: both;
-#     }
-#     .chat-container {
-#         margin-bottom: 70px;
-#     }
-#     </style>
-# """, unsafe_allow_html=True)
-
-# st.title("🤖 Chat AI")
-
-# # Session state
-# if "chat_history" not in st.session_state:
-#     st.session_state.chat_history = []
-
-# # Tombol hapus chat
-# if st.session_state.chat_history:
-#     if st.button("🗑️ Hapus Riwayat", key="clear_chat"):
-#         st.session_state.chat_history = []
-#         st.rerun()
-
-# # Kontainer chat
-# with st.container():
-#     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
-#     for message in st.session_state.chat_history:
-#         if message["role"] == "user":
-#             st.markdown(f'<div class="chat-bubble-user">{message["content"]}</div>', unsafe_allow_html=True)
-#         elif message["role"] == "assistant":
-#             if message["type"] == "text":
-#                 st.markdown(f'<div class="chat-bubble-assistant">{message["content"]}</div>', unsafe_allow_html=True)
-#             elif message["type"] == "plot":
-#                 st.markdown(f'<div class="chat-bubble-assistant">Berikut adalah plot:</div>', unsafe_allow_html=True)
-#                 st.plotly_chart(message["content"], use_container_width=True)
-
-#     st.markdown('</div>', unsafe_allow_html=True)
-
-# # Input user
-# prompt = st.chat_input("Ketik pertanyaanmu...")
-
-# if prompt:
-#     # Simpan chat user
-#     st.session_state.chat_history.append({"role": "user", "content": prompt, "type": "text"})
-
-#     # Proses jawaban AI
-#     with st.spinner("🤖 Menganalisis..."):
-#         response_data = handle_insight_conversation(prompt)
-
-#     # Simpan jawaban
-#     st.session_state.chat_history.append({
-#         "role": "assistant",
-#         "content": response_data["content"],
-#         "type": response_data["type"]
-#     })
-
-#     st.rerun()
-
-
-

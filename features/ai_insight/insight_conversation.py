@@ -376,7 +376,39 @@
 
 
 
+# Prompt conversation
+# Penting: Tambahkan instruksi untuk menghasilkan JSON
+# prompt = PromptTemplate(
+#     input_variables=["history", "input", "context"],
+#     template="""
 
+# Anda adalah asisten data analyst profesional yang membantu pengguna memahami dan mengeksplorasi insight dari dashboard.
+
+# Peran Anda:
+# - Menjawab pertanyaan berdasarkan insight yang tersedia.
+# - Tidak menjawab pertanyaan yang tidak relevan dengan analisis data bisnis.
+# - Bersikap proaktif: berikan saran, tawarkan bantuan lebih lanjut, atau ajukan pertanyaan lanjutan jika diperlukan.
+# - Gunakan gaya bahasa profesional, sopan, dan komunikatif layaknya rekan analis manusia.
+
+# - Jika pengguna meminta plot atau grafik, berikan respons dalam format JSON string yang diawali dan diakhiri dengan tag `<PLOT>`.
+# - Format JSON harus memiliki struktur: {{"type": "bar/line/pie", "title": "Judul Plot", "x_axis": "nama_kolom_x", "y_axis": "nama_kolom_y", "x_axis_label": "Label X", "y_axis_label": "Label Y", "data": [{{'Tahun': 2020, 'Nilai': 30}}, {{'Tahun': 2021, 'Nilai': 35}}]}}. Pastikan data yang Anda berikan valid dan sesuai dengan konteks.
+# - Jika permintaan tidak terkait plot, berikan respons teks biasa.
+# - anda juga seorang statistik profesional dengan pengalaman 10 tahun harus bisa memprediksi dengan berbagai metode statistik ataupun machine learning jika disuruh memprediksi.
+
+# Konteks data:
+# {context}
+
+# Riwayat percakapan:
+# {history}
+
+# Pertanyaan pengguna:
+# {input}
+
+# Jawaban:
+# """
+# )
+
+# features/ai_insight/ingest_conversation.py
 import streamlit as st
 from features.ai_insight.llm_model import ask_llm
 from features.ai_insight.final_summary import generate_llm_summary_for_conversation
@@ -441,38 +473,6 @@ llm = ChatGoogleGenerativeAI(
 )
 context = generate_llm_summary_for_conversation()
 
-# Prompt conversation
-# Penting: Tambahkan instruksi untuk menghasilkan JSON
-# prompt = PromptTemplate(
-#     input_variables=["history", "input", "context"],
-#     template="""
-
-# Anda adalah asisten data analyst profesional yang membantu pengguna memahami dan mengeksplorasi insight dari dashboard.
-
-# Peran Anda:
-# - Menjawab pertanyaan berdasarkan insight yang tersedia.
-# - Tidak menjawab pertanyaan yang tidak relevan dengan analisis data bisnis.
-# - Bersikap proaktif: berikan saran, tawarkan bantuan lebih lanjut, atau ajukan pertanyaan lanjutan jika diperlukan.
-# - Gunakan gaya bahasa profesional, sopan, dan komunikatif layaknya rekan analis manusia.
-
-# - Jika pengguna meminta plot atau grafik, berikan respons dalam format JSON string yang diawali dan diakhiri dengan tag `<PLOT>`.
-# - Format JSON harus memiliki struktur: {{"type": "bar/line/pie", "title": "Judul Plot", "x_axis": "nama_kolom_x", "y_axis": "nama_kolom_y", "x_axis_label": "Label X", "y_axis_label": "Label Y", "data": [{{'Tahun': 2020, 'Nilai': 30}}, {{'Tahun': 2021, 'Nilai': 35}}]}}. Pastikan data yang Anda berikan valid dan sesuai dengan konteks.
-# - Jika permintaan tidak terkait plot, berikan respons teks biasa.
-# - anda juga seorang statistik profesional dengan pengalaman 10 tahun harus bisa memprediksi dengan berbagai metode statistik ataupun machine learning jika disuruh memprediksi.
-
-# Konteks data:
-# {context}
-
-# Riwayat percakapan:
-# {history}
-
-# Pertanyaan pengguna:
-# {input}
-
-# Jawaban:
-# """
-# )
-
 
 # ===versi 27/8/2025
 prompt = PromptTemplate(
@@ -486,14 +486,14 @@ Anda adalah asisten data analyst profesional yang membantu pengguna memahami ins
    - Berikan insight, tren, anomali, dan rekomendasi berdasarkan data.
 
 2. **Knowledge Assistant (RAG)**
-   - Jika ada pertanyaan terkait regulasi, kebijakan, pedoman medis, atau dokumen resmi, gunakan informasi dari RAG Info sebagai sumber utama.
+   - Jika ada pertanyaan terkait regulasi, kebijakan, pedoman medis, atau dokumen resmi, gunakan informasi dari RAG Info sebagai sumber utama baik itu summary, judul, ataupun segalanya.
    - Jangan menambahkan informasi di luar dokumen jika tidak ada di RAG.
 
 3. **Statistical Expert**
    - Anda adalah ahli statistik dengan pengalaman 10 tahun.
    - Jika diminta melakukan prediksi, sebutkan metode yang sesuai (contoh: ARIMA, regresi linier, random forest, gradient boosting).
    - Jelaskan secara ringkas mengapa metode tersebut dipilih.
-   - Jika memungkinkan, berikan contoh hasil prediksi sederhana.
+   - kasih prediksi yang akurat dat tepat.
 
 🖼️ Visualisasi:
 - Jika pengguna meminta grafik, hasilkan respons dalam format JSON yang diawali dan diakhiri dengan tag <PLOT>.
@@ -545,6 +545,13 @@ def handle_insight_conversation(user_input: str, verbose: bool = True):
     aggregate_context = generate_llm_summary_for_conversation()
     full_context = f"{aggregate_context}\n\nRAG Info:\n{rag_text}"
 
+    # Conversation chain
+    conversation = LLMChain(
+    llm=llm,
+    memory=memory,
+    prompt=prompt,
+    verbose=True
+    )
     # Prediksi dengan LLM
     response = conversation.predict(context=full_context, input=user_input)
 

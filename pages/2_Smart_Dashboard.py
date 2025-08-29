@@ -51,6 +51,8 @@ from features.ai_insight.final_summary import generate_llm_summary
 # Apply style
 apply_custom_style()
 # st.set_page_config(page_title="Dashboard",layout='wide')
+from utils.auth_guard import require_login
+name = require_login()
 
 # ==================================================
 if "pertumbuhan_peserta" not in st.session_state:
@@ -82,7 +84,7 @@ if "pertumbuhan_penyakit" not in st.session_state:
 with st.container():
     st.markdown("""
         <div class="header-container">
-            <h1>Dashboard</h1>
+            <h1>Smart Dashboard</h1>
         </div>
     """, unsafe_allow_html=True)
 

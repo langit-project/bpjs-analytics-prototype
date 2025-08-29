@@ -1,0 +1,19 @@
+credentials:
+  usernames:
+    admin:
+      email: admin@example.com
+      name: Admin
+      password: "$2b$12$gWNOd9NM39y9Q1JQL5/m/OjAsbec/Qn0nVo1ldMUF.QdtzL21uwi2"
+    yogi:
+      email: yogi@example.com
+      name: Yogi Kusuma
+      password: "$2b$12$zrbDumhTXy7vNS1JaCW6xurKVZnNxg2ENGQ3HgA6yrcJ7ry62PdCG"
+
+cookie:
+  expiry_days: 30
+  key: random_signature_key_please_change
+  name: dashboard_ai_cookie
+
+
+
+
