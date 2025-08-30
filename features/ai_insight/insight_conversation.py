@@ -534,48 +534,115 @@ conversation_chain = LLMChain(
 )
 
 
+# features/ai_insight/ingest_conversation.py
+
+# ... (bagian import tetap sama)
+
+from features.ai_insight.rag_retriever import retrieve_from_rag # Pastikan ini diimport
+
+# ... (bagian fungsi create_plot_from_json, memory, llm, prompt, conversation_chain tetap sama)
+
 def handle_insight_conversation(user_input: str, verbose: bool = True):
     """
     Percakapan dengan memory + context data + RAG.
     Mengembalikan dictionary dengan tipe konten ('text' atau 'plot') dan kontennya.
     """
-    # Ambil konteks dari RAG
-    rag_docs = retrieve_from_rag(user_input, top_k=10)
-    rag_text = " ".join([doc.page_content for doc in rag_docs])
+    # 1. Ambil konteks dari RAG berdasarkan pertanyaan pengguna
+    rag_docs = retrieve_from_rag(user_input, top_k=10) # 👈 Pastikan ini memanggil fungsi yang benar
+    
+    # 2. Ambil metadata dan content dari dokumen
+    rag_sources = set()
+    rag_texts_with_sources = []
+    
+    for doc in rag_docs:
+        rag_texts_with_sources.append(doc.page_content)
+        if "source" in doc.metadata:
+            rag_sources.add(doc.metadata["source"])
 
-    #  Ambil Context dari Dashboard
+    # 3. Gabungkan semua teks dari RAG menjadi satu string
+    rag_text = "\n\n".join(rag_texts_with_sources)
+    rag_sources_str = ", ".join(rag_sources)
+    
+    # 4. Ambil konteks dari Dashboard
     aggregate_context = generate_llm_summary_for_conversation()
 
-    # gabungkan semua menjadi satu string
-    full_context = f"{aggregate_context}\n\nKnowledge Base:\n{rag_text}"
+    # 5. Gabungkan semua konteks menjadi satu untuk LLM
+    full_context = f"Dashboard Context:\n{aggregate_context}\n\nKnowledge Base:\n{rag_text}"
 
+    # 6. Jalankan conversation chain dengan input dan konteks yang sudah digabungkan
+    response_data = conversation_chain.invoke({
+        "input": user_input,
+        "context": full_context
+    })
 
-    # 4. Prediksi menggunakan chain yang sudah dibuat sebelumnya
-    # Gunakan invoke() untuk meneruskan semua input dengan benar
-    response = conversation_chain.invoke(
-        {"input": user_input, "context": full_context}
-    )
-    
-    # Perbaikan: respons dari invoke() adalah dictionary, bukan string
-    response = response['text']
+    # Dapatkan respons teks dari dictionary
+    response_text = response_data['text']
 
-    # # Prediksi dengan LLM
-    # response = conversation.predict(context=full_context, input=user_input)
+    # 7. Tambahkan informasi sumber dokumen ke respons akhir (jika ada)
+    if rag_sources_str:
+        response_text = f"Berdasarkan dokumen: `{rag_sources_str}`.\n\n{response_text}"
 
-    # Cek apakah respons mengandung data plot
-    plot_start = response.find('<PLOT>')
-    plot_end = response.find('</PLOT>')
+    # 8. Cek dan proses respons untuk plot
+    plot_start = response_text.find('<PLOT>')
+    plot_end = response_text.find('</PLOT>')
 
     if plot_start != -1 and plot_end != -1:
-        plot_json = response[plot_start + len('<PLOT>'):plot_end].strip()
+        plot_json = response_text[plot_start + len('<PLOT>'):plot_end].strip()
         plot_figure = create_plot_from_json(plot_json)
         
         if plot_figure:
-            # Mengembalikan dictionary dengan tipe 'plot' dan objek figure
             return {"type": "plot", "content": plot_figure}
         else:
-            # Jika gagal membuat plot, kembalikan respons teks LLM
-            return {"type": "text", "content": "Maaf, saya tidak dapat membuat plot dari data yang ada. " + response}
+            return {"type": "text", "content": "Maaf, saya tidak dapat membuat plot dari data yang ada. " + response_text}
     else:
-        # Jika tidak ada tag <PLOT>, kembalikan respons teks
-        return {"type": "text", "content": response}
+        return {"type": "text", "content": response_text}
+
+
+# def handle_insight_conversation(user_input: str, verbose: bool = True):
+#     """
+#     Percakapan dengan memory + context data + RAG.
+#     Mengembalikan dictionary dengan tipe konten ('text' atau 'plot') dan kontennya.
+#     """
+#     # Ambil konteks dari RAG
+#     rag_docs = retrieve_from_rag(user_input, top_k=10)
+#     rag_text = " ".join([doc.page_content for doc in rag_docs])
+
+#     #  Ambil Context dari Dashboard
+#     aggregate_context = generate_llm_summary_for_conversation()
+
+#     # gabungkan semua menjadi satu string
+#     full_context = f"{aggregate_context}\n\nKnowledge Base:\n{rag_text}"
+
+
+#     # 4. Prediksi menggunakan chain yang sudah dibuat sebelumnya
+#     # Gunakan invoke() untuk meneruskan semua input dengan benar
+#     response = conversation_chain.invoke(
+#         {"input": user_input, "context": full_context}
+#     )
+    
+#     # Perbaikan: respons dari invoke() adalah dictionary, bukan string
+#     response = response['text']
+
+#     # # Prediksi dengan LLM
+#     # # response = conversation.predict(context=full_context, input=user_input)
+#     #  # 7. Tambahkan informasi sumber dokumen ke respons akhir (jika ada)
+#     # if rag_sources_str:
+#     #     response_text = f"Berdasarkan dokumen: `{rag_sources_str}`.\n\n{response_text}"
+
+#     # Cek apakah respons mengandung data plot
+#     plot_start = response.find('<PLOT>')
+#     plot_end = response.find('</PLOT>')
+
+#     if plot_start != -1 and plot_end != -1:
+#         plot_json = response[plot_start + len('<PLOT>'):plot_end].strip()
+#         plot_figure = create_plot_from_json(plot_json)
+        
+#         if plot_figure:
+#             # Mengembalikan dictionary dengan tipe 'plot' dan objek figure
+#             return {"type": "plot", "content": plot_figure}
+#         else:
+#             # Jika gagal membuat plot, kembalikan respons teks LLM
+#             return {"type": "text", "content": "Maaf, saya tidak dapat membuat plot dari data yang ada. " + response}
+#     else:
+#         # Jika tidak ada tag <PLOT>, kembalikan respons teks
+#         return {"type": "text", "content": response}
