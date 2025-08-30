@@ -485,9 +485,10 @@ Anda adalah asisten data analyst profesional yang membantu pengguna memahami ins
    - Pahami konteks dari data dashboard yang diberikan.
    - Berikan insight, tren, anomali, dan rekomendasi berdasarkan data.
 
-2. **Knowledge Assistant (RAG)**
-   - Jika ada pertanyaan terkait regulasi, kebijakan, pedoman medis, atau dokumen resmi, gunakan informasi dari RAG Info sebagai sumber utama baik itu summary, judul, ataupun segalanya.
-   - Jangan menambahkan informasi di luar dokumen jika tidak ada di RAG.
+2. **Knowledge Base (RAG)**
+   - Jika ada pertanyaan yang berhubungan dengan regulasi, kebijakan, pedoman, atau informasi lain, **gunakan informasi dari bagian 'Konteks Dokumen (Knowledge Base/RAG)' sebagai sumber utama**.
+   - **Tunjukkan judul atau nama dokumen** yang Anda gunakan untuk menjawab pertanyaan, jika memungkinkan. Contoh: "Berdasarkan dokumen `Panduan-BPJS-2024.pdf`, ...".
+   - Jika informasi tidak ditemukan di Konteks Dokumen, katakan dengan sopan bahwa Anda tidak memiliki informasi tersebut.
 
 3. **Statistical Expert**
    - Anda adalah ahli statistik dengan pengalaman 10 tahun.
@@ -525,7 +526,7 @@ Anda adalah asisten data analyst profesional yang membantu pengguna memahami ins
 """
 )
 # Conversation chain
-conversation = LLMChain(
+conversation_chain = LLMChain(
     llm=llm,
     memory=memory,
     prompt=prompt,
@@ -539,21 +540,27 @@ def handle_insight_conversation(user_input: str, verbose: bool = True):
     Mengembalikan dictionary dengan tipe konten ('text' atau 'plot') dan kontennya.
     """
     # Ambil konteks dari RAG
-    # ... (kode RAG Anda tetap sama)
     rag_docs = retrieve_from_rag(user_input, top_k=10)
     rag_text = " ".join([doc.page_content for doc in rag_docs])
-    aggregate_context = generate_llm_summary_for_conversation()
-    full_context = f"{aggregate_context}\n\nRAG Info:\n{rag_text}"
 
-    # Conversation chain
-    conversation = LLMChain(
-    llm=llm,
-    memory=memory,
-    prompt=prompt,
-    verbose=True
+    #  Ambil Context dari Dashboard
+    aggregate_context = generate_llm_summary_for_conversation()
+
+    # gabungkan semua menjadi satu string
+    full_context = f"{aggregate_context}\n\nKnowledge Base:\n{rag_text}"
+
+
+    # 4. Prediksi menggunakan chain yang sudah dibuat sebelumnya
+    # Gunakan invoke() untuk meneruskan semua input dengan benar
+    response = conversation_chain.invoke(
+        {"input": user_input, "context": full_context}
     )
-    # Prediksi dengan LLM
-    response = conversation.predict(context=full_context, input=user_input)
+    
+    # Perbaikan: respons dari invoke() adalah dictionary, bukan string
+    response = response['text']
+
+    # # Prediksi dengan LLM
+    # response = conversation.predict(context=full_context, input=user_input)
 
     # Cek apakah respons mengandung data plot
     plot_start = response.find('<PLOT>')

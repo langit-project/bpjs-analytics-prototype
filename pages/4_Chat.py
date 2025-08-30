@@ -3,7 +3,7 @@
 import streamlit as st
 from utils.custom_style import apply_custom_style
 from features.ai_insight.insight_conversation import handle_insight_conversation
-from features.ai_insight.rag_retriever import load_bpjs_rag   # 🔥 tambahkan import ini
+# from features.ai_insight.rag_retriever import load_bpjs_rag   # 🔥 tambahkan import ini
 
 import plotly.express as px
 

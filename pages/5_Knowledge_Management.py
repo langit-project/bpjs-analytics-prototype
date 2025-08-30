@@ -5,7 +5,8 @@ import os, shutil
 from features.ai_insight.ingest_and_embed import embed_pdf, delete_doc, list_docs
 from utils.custom_style import apply_custom_style
 
-from features.ai_insight.rag_retriever import load_bpjs_rag
+# from features.ai_insight.rag_retriever import load_bpjs_rag
+from features.ai_insight.ingest_and_embed import get_vector_db
 # auth_guard
 from utils.auth_guard import require_login
 name = require_login()
@@ -30,7 +31,7 @@ if uploaded_file is not None:
         with st.spinner("Embedding & simpan ke Chroma..."):
             result = embed_pdf(file_path)
             # 🔥 Refresh retriever setelah embed
-            st.session_state["vector_db"] = load_bpjs_rag()
+            st.session_state["vector_db"] = get_vector_db()
         st.success(
             f"✅ {result['file_name']} berhasil di-embed "
             f"({result['chunks']} chunks) | DocID: {result['doc_id']}"
@@ -74,7 +75,7 @@ for doc in docs:
                 delete_doc(doc["doc_id"])
                 st.success(f"Knowledge {doc['file_name']} berhasil dihapus")
                 # 🔥 Refresh retriever setelah delete
-                st.session_state["vector_db"] = load_bpjs_rag()
+                st.session_state["vector_db"] = get_vector_db()
                 st.rerun()
 
         st.markdown("</div>", unsafe_allow_html=True)
